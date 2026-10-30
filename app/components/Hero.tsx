@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
@@ -21,7 +23,7 @@ export default function Hero() {
       <div className="hero-sticky sticky top-0 h-svh overflow-hidden">
         <motion.div
           style={{ y: reduced ? "17vh" : logoY }}
-          className="absolute inset-x-0 top-0 z-10 flex flex-col items-center px-5"
+          className="absolute inset-x-0 top-0 z-10 flex flex-col items-center px-5 will-change-transform"
         >
           <Image
             src="/hero/mark.png"
@@ -43,7 +45,12 @@ export default function Hero() {
         </motion.div>
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center">
-          <motion.div style={{ y: reduced ? "2vh" : houseY }}>
+          <motion.div
+            initial={reduced ? false : { y: "14vh" }}
+            animate={{ y: 0 }}
+            transition={reduced ? { duration: 0 } : { duration: 1.15, delay: 0.15, ease }}
+          >
+          <motion.div style={{ y: reduced ? "2vh" : houseY }} className="will-change-transform">
             <Image
               src="/hero/house-base.png"
               alt="Többlakásos társasház látványképe"
@@ -52,6 +59,7 @@ export default function Hero() {
               priority
               className="h-[72vh] w-auto max-w-none"
             />
+          </motion.div>
           </motion.div>
         </div>
       </div>

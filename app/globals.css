@@ -79,6 +79,21 @@
   }
 }
 
+@keyframes scroll-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes frame-shift {
+  from {
+    transform: translate3d(0, -8%, 0);
+  }
+  to {
+    transform: translate3d(0, 8%, 0);
+  }
+}
+
 @keyframes marquee-reverse {
   from {
     transform: translate3d(-50%, 0, 0);
@@ -89,8 +104,26 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: 6.5rem;
+}
+
+.scroll-progress {
+  transform: scaleX(0);
+  animation: scroll-progress linear both;
+  animation-timeline: scroll(root);
+}
+
+.frame-shift {
+  animation: frame-shift linear both;
+  animation-timeline: view();
+  animation-range: cover 0% cover 100%;
+}
+
+.marquee,
+.marquee-reverse,
+.marquee-ltr {
+  will-change: transform;
 }
 
 body {
@@ -114,10 +147,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
+  .scroll-progress,
+  .frame-shift,
   .marquee,
   .marquee-reverse,
   .marquee-ltr {

@@ -1,4 +1,5 @@
 import { company } from "@/lib/content";
+import Reveal from "./Reveal";
 
 export default function Contact() {
   const map = `https://www.openstreetmap.org/export/embed.html?bbox=18.368%2C47.572%2C18.410%2C47.592&layer=mapnik&marker=${company.lat}%2C${company.lng}`;
@@ -6,7 +7,7 @@ export default function Contact() {
   return (
     <section id="elerhetoseg" className="bg-paper text-ink">
       <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-24 md:px-10 md:py-32 lg:grid-cols-12">
-        <div className="lg:col-span-6">
+        <Reveal className="lg:col-span-6">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brass-ink">Elérhetőség</p>
           <h2 className="font-nav mt-4 text-[clamp(2.3rem,4.6vw,4rem)] font-medium leading-[1.08] tracking-[-0.03em]">
             Keressen minket.
@@ -46,8 +47,8 @@ export default function Contact() {
           >
             Megnyitás térképen →
           </a>
-        </div>
-        <div className="lg:col-span-6">
+        </Reveal>
+        <Reveal className="lg:col-span-6" delay={0.1}>
           <div className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-ink/5">
             <iframe
               title="Membrán Mérnöki Kft., Tatabánya, Vadász utca 65."
@@ -56,7 +57,7 @@ export default function Contact() {
               loading="lazy"
             />
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

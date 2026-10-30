@@ -1,16 +1,17 @@
 import Image from "next/image";
 import Frame from "./Frame";
+import Reveal from "./Reveal";
 import { archive, clients, wideShots } from "@/lib/content";
 
 export default function Archive() {
   return (
     <section className="bg-mist py-8 text-ink">
-      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+      <Reveal className="mx-auto max-w-[1400px] px-6 md:px-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-ink/45">Helyszínek</p>
         <h2 className="font-nav mt-3 max-w-xl text-3xl font-medium tracking-[-0.03em] md:text-4xl">
           Archív képek a munkáinkról.
         </h2>
-      </div>
+      </Reveal>
 
       <div className="no-scrollbar mt-8 flex gap-4 overflow-x-auto px-6 pb-4 md:px-10">
         {wideShots.map((shot) => (

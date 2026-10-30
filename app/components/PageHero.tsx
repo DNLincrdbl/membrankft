@@ -1,4 +1,5 @@
 import Heading from "./Heading";
+import Reveal from "./Reveal";
 
 export default function PageHero({
   index,
@@ -17,11 +18,15 @@ export default function PageHero({
     <header className="relative overflow-hidden bg-mist pt-32 pb-20 text-ink md:pt-40 md:pb-28">
       <div className="grid-bg pointer-events-none absolute inset-0" />
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-ink/45">
-          {index} — {kicker}
-        </p>
+        <Reveal>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-ink/45">
+            {index} — {kicker}
+          </p>
+        </Reveal>
         <Heading as="h1" onMount serif={serif} bold={bold} className="mt-6" />
-        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink/70 md:text-xl">{lede}</p>
+        <Reveal delay={0.12}>
+          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink/70 md:text-xl">{lede}</p>
+        </Reveal>
       </div>
     </header>
   );

@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { nav, company } from "@/lib/content";
+import { scrollToId, scrollToY } from "@/lib/scroll";
+import Reveal from "./Reveal";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -11,17 +13,14 @@ export default function Footer() {
   function onSectionClick(event: React.MouseEvent<HTMLAnchorElement>, id: string) {
     if (pathname !== "/") return;
     event.preventDefault();
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const behavior: ScrollBehavior = reduced ? "auto" : "smooth";
-    if (id === "fooldal") window.scrollTo({ top: 0, behavior });
-    else document.getElementById(id)?.scrollIntoView({ behavior, block: "start" });
+    scrollToId(id);
     window.history.pushState(null, "", id === "fooldal" ? "/" : `/#${id}`);
   }
 
   return (
     <footer className="border-t border-black/10 bg-[#f3f3f1] text-ink">
       <div className="mx-auto max-w-[1400px] px-6 pt-20 pb-10 md:px-12 md:pt-28">
-        <div className="flex flex-col gap-10 md:flex-row md:items-center md:justify-between">
+        <Reveal className="flex flex-col gap-10 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="font-nav text-sm font-medium tracking-[-0.02em] text-ink/45">
               Membrán Mérnöki Kft. · Tatabánya
@@ -41,7 +40,7 @@ export default function Footer() {
             height={749}
             className="h-auto w-[min(72vw,280px)] shrink-0 md:w-[min(32vw,340px)]"
           />
-        </div>
+        </Reveal>
 
         <div className="mt-20 grid gap-12 border-t border-black/10 pt-10 md:grid-cols-3">
           <nav aria-label="Lábléc menü">
@@ -102,7 +101,7 @@ export default function Footer() {
           <p>© 2012–2026 Membrán Mérnöki Kft. Minden jog fenntartva.</p>
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => scrollToY(0)}
             className="uppercase tracking-[0.18em] hover:text-ink"
           >
             Vissza a tetejére

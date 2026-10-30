@@ -3,29 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState, type MouseEvent } from "react";
 import { nav } from "@/lib/content";
+import { scrollToId } from "@/lib/scroll";
 
 const sections = ["fooldal", "cegunkrol", "tevekenyseg", "munkatarsak", "referenciak", "elerhetoseg"];
-
-function scrollToId(id: string) {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const behavior: ScrollBehavior = reduced ? "auto" : "smooth";
-  if (id === "fooldal") {
-    window.scrollTo({ top: 0, behavior });
-    return;
-  }
-  document.getElementById(id)?.scrollIntoView({ behavior, block: "start" });
-}
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Navbar() {
   const pathname = usePathname();
+  const reduced = useReducedMotion();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const open = openPath === pathname;
-  const { scrollY, scrollYProgress } = useScroll();
-  const bar = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const [solid, setSolid] = useState(false);
   const [activeId, setActiveId] = useState("fooldal");
 
   function onSectionClick(event: MouseEvent<HTMLAnchorElement>, id: string) {
@@ -35,11 +25,6 @@ export default function Navbar() {
     scrollToId(id);
     window.history.pushState(null, "", id === "fooldal" ? "/" : `/#${id}`);
   }
-
-  useEffect(() => {
-    const unsub = scrollY.on("change", (value) => setSolid(value > 24));
-    return () => unsub();
-  }, [scrollY]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -54,31 +39,34 @@ export default function Navbar() {
       .map((id) => document.getElementById(id))
       .filter((node): node is HTMLElement => node !== null);
 
-    const mark = () => {
-      const line = window.scrollY + 160;
-      let current = "fooldal";
-      for (const node of nodes) {
-        if (node.getBoundingClientRect().top + window.scrollY <= line) current = node.id;
-      }
-      setActiveId((prev) => (prev === current ? prev : current));
-    };
+    const visible = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.set(entry.target.id, entry.boundingClientRect.top);
+          else visible.delete(entry.target.id);
+        }
+        const current = [...visible.entries()].sort((a, b) => a[1] - b[1])[0]?.[0];
+        if (current) setActiveId((prev) => (prev === current ? prev : current));
+      },
+      { rootMargin: "-18% 0px -62% 0px", threshold: 0 },
+    );
 
-    mark();
-    window.addEventListener("scroll", mark, { passive: true });
-    return () => window.removeEventListener("scroll", mark);
+    for (const node of nodes) observer.observe(node);
+    return () => observer.disconnect();
   }, [pathname]);
 
   return (
     <>
-      <motion.div
-        style={{ scaleX: bar }}
-        className="fixed inset-x-0 top-0 z-[60] h-px origin-left bg-ink"
-      />
-      <header className="font-nav fixed inset-x-0 top-0 z-50">
+      <div className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-[60] h-px origin-left bg-ink" />
+      <motion.header
+        className="font-nav fixed inset-x-0 top-0 z-50"
+        initial={reduced ? false : { y: "-110%" }}
+        animate={{ y: 0 }}
+        transition={reduced ? { duration: 0 } : { duration: 0.85, ease }}
+      >
         <div
-          className={`border-b border-black/10 transition-colors duration-300 ${
-            solid || open ? "bg-white/92 backdrop-blur-md" : "bg-[#f5f5f3]/72 backdrop-blur-md"
-          }`}
+          className={`border-b border-black/10 ${open ? "bg-white" : "bg-[#f5f5f3]"}`}
         >
           <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-6 px-5 md:h-[4.5rem] md:px-8">
             <Link href="/" onClick={(event) => onSectionClick(event, "fooldal")} className="flex items-center gap-2.5 text-ink">
@@ -135,7 +123,7 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       <AnimatePresence>
         {open ? (
@@ -143,7 +131,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-white/96 text-ink backdrop-blur-md md:hidden"
+            className="fixed inset-0 z-40 bg-white text-ink md:hidden"
           >
             <nav className="flex h-full flex-col justify-end gap-1 px-6 pb-12" aria-label="Mobil menü">
               {nav.map((item, index) => (
